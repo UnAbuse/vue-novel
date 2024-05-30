@@ -24,46 +24,20 @@ jobs:
   # 任务ID
   build-and-deploy:
     # 运行环境
-    # runs-on: macos-latest
-    # runs-on: windows-latest
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    
     # 步骤
     steps:
       # 官方action，将代码拉取到虚拟机
-      - name: Checkout
+      - name: Checkout  ️ 
         uses: actions/checkout@v3
 
-      # 建一个名为setup-node的步骤（安装指定版本的Node.js）
-      - name: setup-node 
-        # 使用setup-node@v3这个action
-        uses: actions/setup-node@v3
-        # 指定某个action 可能需要输入的参数
+      - name: Install and Build   # 安装依赖、打包，如果提前已打包好无需这一步
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy   # 部署
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          node-version: '18.x'
-
-      # 安装 pnpm
-      - name: Install pnpm
-        run: npm install pnpm -g
-
-      # 安装依赖  
-      - name: Install dependencies
-        run: pnpm i
-      # 打包
-      - name: Build application 🔧
-        run: pnpm run build
-
-      # 部署 https://github.com/JamesIves/github-pages-deploy-action
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages  # default: gh-pages
-          folder: dist
-          clean: true # Automatically remove deleted files from the deploy branch
-          # commit-message: ${{ github.event.head_commit.message }} # default: `Deploying to gh-pages from @ 3238feb 🚀`
-          # commit-message: "deploy: ${{ github.sha }} (${{ github.event.head_commit.message }}) 🚀 "
-
+          branch: gh-pages # 部署后提交到那个分支
+          folder: dist # 这里填打包好的目录名称
