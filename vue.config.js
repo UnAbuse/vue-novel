@@ -5,7 +5,7 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       '/api': {
-        target: 'http://www.api.zhuishushenqi.com',
+        target: 'http://localhost:8900',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
@@ -13,7 +13,7 @@ module.exports = {
         }
       },
       '/content': {
-        target: 'http://chapter2.zhuishushenqi.com',
+        target: 'http://localhost:8900',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
